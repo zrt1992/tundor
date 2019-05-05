@@ -15,7 +15,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
+       $this->middleware('jwt.auth', ['except' => ['login']]);
     }
 
     /**
@@ -91,14 +91,14 @@ class AuthController extends Controller
      */
     public function guard()
     {
-        return Auth::guard();
+        return Auth::guard('api');
     }
 
     public function test(){
 
         return response()->json([
 
-            'token_type' => 'bearer'
+            'token_type' => 'bssearer'
         ]);
     }
 }
