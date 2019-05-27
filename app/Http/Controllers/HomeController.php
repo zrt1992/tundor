@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\Test;
+use  App\SocialMedia\Facebook;
+use App\Repositories\Eloquent\ProductRepository;
 
 class HomeController extends Controller
 {
@@ -13,7 +16,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('jwt.auth:api')->except('test');
     }
 
     /**
@@ -24,5 +27,10 @@ class HomeController extends Controller
     public function index()
     {
         return view('home');
+    }
+
+    public function test(ProductRepository
+                         $productRepository){
+      echo $productRepository->getAllByCategory(9);
     }
 }

@@ -17,9 +17,8 @@ use Illuminate\Http\Request;
 Route::post('register', 'AuthController@register');
 Route::post('login', 'AuthController@login');
 Route::post('recover', 'AuthController@recover');
-Route::get('test', function () {
-    return response()->json(['foo' => 'bar']);
-});
+Route::get('test', 'HomeController@test');
+
 Route::group(['middleware' => ['jwt.auth']], function () {
     Route::get('logout', 'AuthController@logout');
 

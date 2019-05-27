@@ -15,9 +15,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::resource('tasks','TodoController');
+
 //Route::group(['middleware' => 'zulfi:editor'], function ($id) {
 //
-//    Route::get('/tests', 'AuthController@test');
+    Route::get('/test', 'HomeController@test');
 //});
 //
 //Route::get('/zulfi', ['middleware' => 'zulfi:editor', function ($id) {

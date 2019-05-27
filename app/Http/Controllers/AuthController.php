@@ -91,7 +91,7 @@ class AuthController extends Controller
      */
     public function guard()
     {
-        return Auth::guard('api');
+        return Auth::guard('admin-api');
     }
 
     public function test(){
