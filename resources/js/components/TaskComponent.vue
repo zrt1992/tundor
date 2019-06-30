@@ -7,17 +7,24 @@
 
                     <div class="card-body">
 
-                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+                        <button type="button"
+                                class="btn btn-primary"
+                                data-toggle="modal"
+                                data-target="#myModal">
                             Open modal
                         </button>
 
                         <ul class="list-group" v-for=" t in tasks">
-                           <li>{{t.id}} - {{t.names}}
-
-
-                           </li>
-
-                       </ul>
+                            <li>
+                                {{t.id}} - {{t.names}}
+                                <button type="button"
+                                        class="btn btn-primary"
+                                        data-toggle="modal"
+                                        data-target="#editModal">
+                                    Edit
+                                </button>
+                            </li>
+                        </ul>
 
                     </div>
                 </div>
@@ -26,41 +33,41 @@
 
         </div>
         <addtask @recordAdded="refreshRecord"></addtask>
+        <edittask :rec="editRec"></edittask>
     </div>
-
 
 
 </template>
 
 
-
 <script>
-    // window.onload = function() {
-    //     if (window.jQuery) {
-    //         // jQuery is loaded
-    //         alert("Yeah!");
-    //     } else {
-    //         // jQuery is not loaded
-    //         alert("Doesn't Work");
-    //     }
-    // },
+
     Vue.component('addtask', require('./addModelComponent.vue').default);
+    Vue.component('edittask', require('./EditModelComponent.vue').default);
     export default {
-        data(){
-            return{
-                tasks:{},
+        data() {
+            return {
+                tasks: {},
+                editRec:{},
+                errors:[],
+
 
             }
         },
-        methods:{
-            refreshRecord(record){
+        methods: {
+            refreshRecord(record) {
                 this.tasks.unshift(record.data)
+            },
+            getRecordId(id){
+                axios.get('http://tundor.test/tasks'+id)
+                    .then((response) => this.tasks = response.data)
+                    .catch( error => this.errors= error.response.data.errors);
             }
 
         },
-        created(){
+        created() {
             axios.get('http://tundor.test/tasks')
-                .then((response)=>this.tasks=response.data)
+                .then((response) => this.tasks = response.data)
                 .catch((error) => console.log(error));
 
         },

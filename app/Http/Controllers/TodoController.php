@@ -54,7 +54,7 @@ class TodoController extends Controller
      * @param  \App\Todo  $todo
      * @return \Illuminate\Http\Response
      */
-    public function show(Todo $todo)
+    public function show(Todo $task)
     {
         //
     }
@@ -65,7 +65,7 @@ class TodoController extends Controller
      * @param  \App\Todo  $todo
      * @return \Illuminate\Http\Response
      */
-    public function edit(Todo $todo)
+    public function edit(Todo $task)
     {
         //
     }
@@ -77,7 +77,7 @@ class TodoController extends Controller
      * @param  \App\Todo  $todo
      * @return \Illuminate\Http\Response
      */
-    public function update(TodoRequest $request, Todo $todo)
+    public function update(TodoRequest $request, Todo $task)
     {
         //
     }
@@ -88,7 +88,7 @@ class TodoController extends Controller
      * @param  \App\Todo  $todo
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Todo $todo)
+    public function destroy(Todo $task)
     {
         //
     }

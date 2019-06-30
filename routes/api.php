@@ -24,6 +24,8 @@ Route::group(['middleware' => ['jwt.auth']], function () {
 
 });
 
+Route::resource('store','TaskController');
+
 //Route::group(['prefix' => 'v1'], function () {
 //    Route::get('/test', 'AuthController@test');
 //});

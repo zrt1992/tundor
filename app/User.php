@@ -20,6 +20,8 @@ class User extends Authenticatable implements JWTSubject
         'name', 'email', 'password',
     ];
 
+    protected $primaryKey = 'user_id';
+
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -56,5 +58,10 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function order()
+    {
+        return $this->hasMany('App\Order', 'user_id','user_id');
     }
 }

@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Order;
 use App\Task;
+use App\User;
 use Illuminate\Http\Request;
+use App\Http\Requests\TaskRequest;
 
 class TaskController extends Controller
 {
@@ -14,10 +17,16 @@ class TaskController extends Controller
      */
     public function index()
     {
-        //
+
+
+        $order = Order::where(['id' => 1]);
+        $order = $order->with(['user'])->get();
+        dd($order->toArray());
+
+        $users = User::with('podcasts')->get();
     }
 
-    /**
+    /*
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
@@ -30,18 +39,22 @@ class TaskController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(TaskRequest $request)
     {
-        //
+        return response()
+            ->json(['status' => true, 'message' => "Email sent successfully."]);
+
+        dd('hi');
+        dd($validated = $request->validated());
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Task  $task
+     * @param \App\Task $task
      * @return \Illuminate\Http\Response
      */
     public function show(Task $task)
@@ -52,7 +65,7 @@ class TaskController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Task  $task
+     * @param \App\Task $task
      * @return \Illuminate\Http\Response
      */
     public function edit(Task $task)
@@ -63,8 +76,8 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Task  $task
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Task $task
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Task $task)
@@ -75,7 +88,7 @@ class TaskController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Task  $task
+     * @param \App\Task $task
      * @return \Illuminate\Http\Response
      */
     public function destroy(Task $task)
