@@ -1,78 +1,64 @@
 <template>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">All todo Tasks</div>
-
-                    <div class="card-body">
-
-                        <button type="button"
-                                class="btn btn-primary"
-                                data-toggle="modal"
-                                data-target="#myModal">
-                            Open modal
-                        </button>
-
-                        <ul class="list-group" v-for=" t in tasks">
-                            <li>
-                                {{t.id}} - {{t.names}}
-                                <button type="button"
-                                        class="btn btn-primary"
-                                        data-toggle="modal"
-                                        data-target="#editModal">
-                                    Edit
-                                </button>
-                            </li>
-                        </ul>
-
-                    </div>
-                </div>
-            </div>
-
-
+    <div class="container" style="border:solid 2px yellow;">
+        <div class="col-md-8">
+            <ul class="list-group" v-for="task in tasks">
+                <li>
+                    <input name="text" v-model="task.task_name"/>
+                    <button v-on:click="saveRecord(task.id,task.task_name)">save</button>
+                </li>
+            </ul>
+            {{tasks}}
         </div>
-        <addtask @recordAdded="refreshRecord"></addtask>
-        <edittask :rec="editRec"></edittask>
+        <input type="text" v-model="test"/>
+
+        <div>
+            {{errors}}
+        </div>
+
+
+        <samplecomponent v-bind:tasks="tasks" v-bind:inputvalue="test"></samplecomponent>
     </div>
-
-
 </template>
 
-
-<script>
-
-    Vue.component('addtask', require('./addModelComponent.vue').default);
-    Vue.component('edittask', require('./EditModelComponent.vue').default);
+<script> 
+    Vue.component('samplecomponent', require('./SampleComponent.vue').default);
     export default {
         data() {
             return {
-                tasks: {},
-                editRec:{},
-                errors:[],
-
-
+                test:"",
+                tasks: [],
+                update: {
+                    firstName: 'Fred',
+                    data: 'Flintstone'
+                },
+                errors: []
             }
         },
         methods: {
-            refreshRecord(record) {
-                this.tasks.unshift(record.data)
-            },
-            getRecordId(id){
-                axios.get('http://tundor.test/tasks'+id)
+            getRecordId(id) {
+                axios.get('http://tundor.test/tasks' + id)
                     .then((response) => this.tasks = response.data)
-                    .catch( error => this.errors= error.response.data.errors);
+                    .catch(error => this.errors = error.response.data.errors);
+            },
+            saveRecord(id, name) {
+                axios.put('http://tundor.test/tasks/' + id, {
+                    id: id,
+                    name: name
+                })
+                    .then(function (response) {
+                        console.log(response.data);
+                    })
             }
-
         },
         created() {
             axios.get('http://tundor.test/tasks')
                 .then((response) => this.tasks = response.data)
-                .catch((error) => console.log(error));
+                .catch((error) => this.errors = error.response);
 
         },
         mounted() {
-            console.log('Task Component mounted.')
+
+
         }
     }
 </script>

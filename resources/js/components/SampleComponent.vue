@@ -1,23 +1,25 @@
 <template>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">Sample</div>
-
-                    <div class="card-body">
-                        I am Sample
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="container" style="border:solid 2px red;">
+        <ul>
+            <li v-for="task in tasks">
+                {{task.task_name}}
+            </li>
+        </ul>
+        {{inputvalue}}
     </div>
+
+
+
 </template>
 
 <script>
     export default {
+        props: ['tasks','inputvalue'],
+        data() {
+            return {}
+        },
         mounted() {
-            console.log('Sample Component mounted.')
+            console.log("go lol");
         }
     }
 </script>
