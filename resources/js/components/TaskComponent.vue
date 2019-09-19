@@ -20,7 +20,7 @@
     </div>
 </template>
 
-<script> 
+<script>
     Vue.component('samplecomponent', require('./SampleComponent.vue').default);
     export default {
         data() {
