@@ -17,20 +17,12 @@ use Illuminate\Http\Request;
 Route::post('register', 'AuthController@register');
 Route::post('login', 'AuthController@login');
 Route::post('recover', 'AuthController@recover');
-Route::get('test', 'HomeController@test');
+Route::get('test', 'CategoryController@test');
+Route::get('logout', 'AuthController@logout');
+Route::post('/user/category/add','UserController@add_user_categories');
+Route::get('/user/category/get/{id}','UserController@get_user_categories');
+Route::post('/user/profile/update','UserController@profile_update');
+Route::get('/user/profile','UserController@profile');
 
-Route::group(['middleware' => ['jwt.auth']], function () {
-    Route::get('logout', 'AuthController@logout');
+Route::resource('categories', 'CategoryController');
 
-});
-
-Route::resource('store','TaskController');
-
-//Route::group(['prefix' => 'v1'], function () {
-//    Route::get('/test', 'AuthController@test');
-//});
-
-Route::group(['prefix' => 'v1'], function () {
-    Route::get('test', 'AuthController@test');
-
-});

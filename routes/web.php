@@ -36,3 +36,7 @@ Route::prefix('admin')->group(function (){
     Route::post('/login', 'Auth\AdminLoginController@login')->name('login-admin');
     Route::get('/dashboard', 'AdminController@index')->name('admin');
 });
+
+Route::group(['prefix' => 'admin'], function () {
+    Voyager::routes();
+});

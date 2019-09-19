@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RegisterRequest;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Controller;
+
 
 class AuthController extends Controller
 {
@@ -15,13 +17,13 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-       $this->middleware('jwt.auth', ['except' => ['login']]);
+        $this->middleware('jwt.auth', ['except' => ['login', 'register']]);
     }
 
     /**
      * Get a JWT token via given credentials.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -33,7 +35,15 @@ class AuthController extends Controller
             return $this->respondWithToken($token);
         }
 
-        return response()->json(['error' => 'Unauthorized'], 401);
+        return response()->json(
+            [
+                'data' =>
+                    [
+                        'errors' => [['message' => 'You are not authorized']]
+                    ]
+                ,
+                'status_code' => 401
+            ], 401);
     }
 
     /**
@@ -71,7 +81,7 @@ class AuthController extends Controller
     /**
      * Get the token array structure.
      *
-     * @param  string $token
+     * @param string $token
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -91,14 +101,48 @@ class AuthController extends Controller
      */
     public function guard()
     {
-        return Auth::guard('admin-api');
+        return Auth::guard('api');
     }
 
-    public function test(){
+    public function register(RegisterRequest $request)
+    {
+        $user = User::where('email', $request->email)->get()->toArray();
+        $isSocialMediaRequest = (integer)$request->social_media;
+        if ($isSocialMediaRequest) {
+            if (empty($user)) {
+                $user = User::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'password' => bcrypt($request->password),
+                    'profile_pic' => $request->profile_pic
+                ]);
 
-        return response()->json([
+            } else {
+                return $this->login($request);
+            }
+        } else {
+            if (!empty($user)) {
+                $data = [
+                    'data'=>[
+                        'errors'=>['message'=>"The email has already been taken."]
+                    ]
+                ];
+                return response()->json($data,422);
+            }
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => bcrypt($request->password),
+            ]);
+        }
 
-            'token_type' => 'bssearer'
-        ]);
+
+        $credentials = $request->only('email', 'password');
+        if ($token = $this->guard()->attempt($credentials)) {
+            return $this->respondWithToken($token);
+        }
+
+        return $this->respondWithToken($token);
     }
+
 }

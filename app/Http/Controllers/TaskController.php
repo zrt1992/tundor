@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Todo;
 use App\Order;
 use App\Task;
 use App\User;
@@ -17,13 +18,28 @@ class TaskController extends Controller
      */
     public function index()
     {
+        //dd('hello');
+        //$user = User::where('id','1')->get()->first();
 
+        $user = new User();
+        $user->name = "zulfi khan";
+        $user->email = "aliii@khan.com";
+        $user->email_verified_at = now();
+        $user->password = bcrypt("password");
+        $user->save();
 
-        $order = Order::where(['id' => 1]);
-        $order = $order->with(['user'])->get();
-        dd($order->toArray());
+        $user->orders()->create([
+            'qty' => 15,
+            'total' => 154
+        ]);
+        dd($user->save());
 
-        $users = User::with('podcasts')->get();
+        bcrypt('password');
+
+        $tasks = Task::orderBy('id', 'asc')->get();
+        //$tasks['abc'] = 'this is errors';
+        return response()
+            ->json($tasks, 200);
     }
 
     /*
@@ -70,7 +86,8 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
-        //
+        dump($task);
+        die;
     }
 
     /**
@@ -82,7 +99,9 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
-        //
+        $task->task_name = $request->get('name');
+        $task->save();
+        return response()->json($task, 200);
     }
 
     /**

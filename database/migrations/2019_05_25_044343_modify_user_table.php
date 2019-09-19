@@ -13,9 +13,9 @@ class ModifyUserTable extends Migration
      */
     public function up()
     {
-        Schema::table('todos', function(Blueprint $table) {
-            $table->renameColumn('name', 'myname');
-        });
+//        Schema::table('todos', function(Blueprint $table) {
+//            $table->renameColumn('name', 'myname');
+//        });
     }
 
     /**
@@ -25,8 +25,8 @@ class ModifyUserTable extends Migration
      */
     public function down()
     {
-        Schema::table('todos', function(Blueprint $table) {
-            $table->renameColumn('myname', 'name');
-        });
+//        Schema::table('todos', function(Blueprint $table) {
+//            $table->renameColumn('myname', 'name');
+//        });
     }
 }

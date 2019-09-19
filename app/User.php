@@ -7,7 +7,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements JWTSubject
+class User extends \TCG\Voyager\Models\User implements JWTSubject
 {
     use Notifiable;
 
@@ -17,10 +17,10 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password','profile_pic'
     ];
 
-    protected $primaryKey = 'user_id';
+    protected $primaryKey = 'id';
 
     /**
      * The attributes that should be hidden for arrays.
@@ -60,8 +60,13 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    public function order()
+    public function orders()
     {
-        return $this->hasMany('App\Order', 'user_id','user_id');
+        return $this->hasMany('App\Order', 'user_id','id');
+    }
+
+    public function categories()
+    {
+        return $this->belongsToMany('App\Category', 'user_categories','user_id','category_id')->withPivot('created_at');
     }
 }

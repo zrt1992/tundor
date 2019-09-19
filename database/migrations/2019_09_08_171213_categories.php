@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class Modifynameintodo extends Migration
+class Categories extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,11 @@ class Modifynameintodo extends Migration
      */
     public function up()
     {
-//        Schema::table('todos', function(Blueprint $table) {
-//            $table->renameColumn('name', 'names');
-//        });
+        Schema::create('categories', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('name');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -25,8 +27,6 @@ class Modifynameintodo extends Migration
      */
     public function down()
     {
-        Schema::table('todos', function(Blueprint $table) {
-            $table->renameColumn('names', 'name');
-        });
+        //
     }
 }

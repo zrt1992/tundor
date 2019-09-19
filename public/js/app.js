@@ -1880,14 +1880,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  mounted: function mounted() {
-    console.log('Sample Component mounted.');
+  props: ['tasks', 'inputvalues'],
+  data: function data() {
+    return {};
   }
 });
 
@@ -1902,6 +1898,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _SampleComponent__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./SampleComponent */ "./resources/js/components/SampleComponent.vue");
 //
 //
 //
@@ -1943,12 +1940,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
+
 Vue.component('addtask', __webpack_require__(/*! ./addModelComponent.vue */ "./resources/js/components/addModelComponent.vue")["default"]);
 Vue.component('edittask', __webpack_require__(/*! ./EditModelComponent.vue */ "./resources/js/components/EditModelComponent.vue")["default"]);
 /* harmony default export */ __webpack_exports__["default"] = ({
+  components: {
+    SampleComponent: _SampleComponent__WEBPACK_IMPORTED_MODULE_0__["default"]
+  },
   data: function data() {
     return {
+      heybaby: "why are you fucing doing this asd",
       tasks: {},
       editRec: {},
       errors: []
@@ -1958,21 +1959,16 @@ Vue.component('edittask', __webpack_require__(/*! ./EditModelComponent.vue */ ".
     refreshRecord: function refreshRecord(record) {
       this.tasks.unshift(record.data);
     },
-    getRecordId: function getRecordId(id) {
-      var _this = this;
-
-      axios.get('http://tundor.test/tasks' + id).then(function (response) {
-        return _this.tasks = response.data;
-      })["catch"](function (error) {
-        return _this.errors = error.response.data.errors;
-      });
+    getRecordId: function getRecordId(id) {// axios.get('http://tundor.test/tasks'+id)
+      //     .then((response) => this.tasks = response.data)
+      //     .catch( error => this.errors= error.response.data.errors);
     }
   },
   created: function created() {
-    var _this2 = this;
+    var _this = this;
 
     axios.get('http://tundor.test/tasks').then(function (response) {
-      return _this2.tasks = response.data;
+      return _this.tasks = response.data;
     })["catch"](function (error) {
       return console.log(error);
     });
@@ -20405,28 +20401,22 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c("div", { staticClass: "row justify-content-center" }, [
-        _c("div", { staticClass: "col-md-8" }, [
-          _c("div", { staticClass: "card" }, [
-            _c("div", { staticClass: "card-header" }, [_vm._v("Sample")]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [
-              _vm._v("\n                    I am Sample\n                ")
-            ])
+  return _c("div", { staticClass: "container" }, [
+    _c(
+      "ul",
+      [
+        _vm._l(_vm.tasks, function(task) {
+          return _c("li", [
+            _vm._v("\n            " + _vm._s(task.name) + "\n        ")
           ])
-        ])
-      ])
-    ])
-  }
-]
+        }),
+        _vm._v("\n        " + _vm._s(_vm.inputvalues) + "\n    ")
+      ],
+      2
+    )
+  ])
+}
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -20487,7 +20477,7 @@ var render = function() {
                         "\n                            " +
                           _vm._s(t.id) +
                           " - " +
-                          _vm._s(t.names) +
+                          _vm._s(t.name) +
                           "\n                            "
                       ),
                       _c(
@@ -20518,7 +20508,9 @@ var render = function() {
       _vm._v(" "),
       _c("addtask", { on: { recordAdded: _vm.refreshRecord } }),
       _vm._v(" "),
-      _c("edittask", { attrs: { rec: _vm.editRec } })
+      _c("edittask", { attrs: { rec: _vm.editRec } }),
+      _vm._v(" "),
+      _c("sample-component", { attrs: { inputvalues: _vm.heybaby } })
     ],
     1
   )
