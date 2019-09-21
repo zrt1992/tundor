@@ -124,7 +124,7 @@ class AuthController extends Controller
             if (!empty($user)) {
                 $data = [
                     'data'=>[
-                        'errors'=>['message'=>"The email has already been taken."]
+                        'errors'=>[['message'=>"The email has already been taken."]]
                     ]
                 ];
                 return response()->json($data,422);

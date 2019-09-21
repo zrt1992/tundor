@@ -23,7 +23,7 @@ class UserController extends Controller
 
     public function add_user_categories(Request $request)
     {
-
+        $yesterday = date("Y-m-d", strtotime( '-1 days' ) );
         $user = \Auth::user();
         $categories = $request->all();
         if(!isset($request->all()[0]['category_id'])){
@@ -38,8 +38,8 @@ class UserController extends Controller
                 ], 401);
 
         }
-        $todayCategories = \App\UserCategory::where('category_id',$request->all()[0]['category_id'])->whereDate('created_at', Carbon::today())->get()->toArray();
-        if(!empty($todayCategories->toArray())){
+        $todayCategories = \App\UserCategory::where('user_id',\Auth::id())->whereDate('created_at', Carbon::today())->get()->toArray();
+        if(!empty($todayCategories)){
             return response()->json(
                 [
                     'data'=>
@@ -50,21 +50,36 @@ class UserController extends Controller
                     'status_code' => 401
                 ], 401);
         }
-
+        $userlastdaycategories = \App\UserCategory::where('user_id',\Auth::id())->whereDate('created_at', $yesterday)->get()->toArray();
         $data = [];
-        foreach ($categories as $category){
+        foreach ($categories as $category) {
             $data[$category['category_id']] =
                 [
-                    'long' =>$category['long'],
+                    'long' => $category['long'],
                     'lat' => $category['lat'],
+                    'color' => $category['color'],
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
-            ];
+                ];
         }
         $user->categories()->attach($data);
+
+        if (empty($userlastdaycategories)) {
+            $user->count = 1;
+        } else {
+            if ($user->count == 10) {
+                $user->count = 1;
+                \App\UserCategory::where('user_id',\Auth::id())->whereDate('created_at', $yesterday)->get()->toArray();
+
+
+            } else {
+                $user->count = $user->count + 1;
+            }
+        }
+        $user->save();
         return response()->json(
             [
-                'data'=>
+                'data' =>
                     [
                         'message' => 'Categories update successfully'
                     ]
@@ -132,6 +147,9 @@ class UserController extends Controller
                 ,
                 'status_code' => 200
             ], 200);
-
     }
+
+
+
+
 }

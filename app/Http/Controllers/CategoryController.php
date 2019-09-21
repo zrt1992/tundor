@@ -22,8 +22,7 @@ class CategoryController extends Controller
     {
         $todayCategories = \App\UserCategory::where('user_id', \Auth::id())->whereDate('created_at', Carbon::today())->get()->toArray();
         if (empty($todayCategories)) {
-
-            $categories = Category::get()->all();
+            $categories = Category::whereDate('created_at', Carbon::today())->get()->toArray();
             $data = [];
             $data['status_code'] = 200;
             $data['data']['categories'] = $categories;
@@ -33,7 +32,9 @@ class CategoryController extends Controller
                 [
                     'data' =>
                         [
-                            'errors' => [['message' => 'You are have already selected category today']]
+                            'errors' => [['message' => 'You are have already selected category today']],
+                            'categories' => $todayCategories
+
                         ]
                     ,
                     'status_code' => 401
