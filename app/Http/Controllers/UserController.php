@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Models\Todo;
 use App\Order;
 use App\Task;
@@ -12,19 +10,15 @@ use App\Http\Requests\TaskRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Tymon\JWTAuth\JWTAuth;
-
 class UserController extends Controller
 {
-    // if user has seleted a category for 10 consecutive days then get the most selected categories by all users.
-
     public function __construct()
     {
         $this->middleware('jwt.auth');
     }
-
     public function add_user_categories(Request $request)
     {
-
+        $yesterday = date("Y-m-d", strtotime( '-1 days' ) );
         $user = \Auth::user();
         $categories = $request->all();
         if(!isset($request->all()[0]['category_id'])){
@@ -37,7 +31,6 @@ class UserController extends Controller
                     ,
                     'status_code' => 401
                 ], 401);
-
         }
         $todayCategories = \App\UserCategory::where('user_id',\Auth::id())->whereDate('created_at', Carbon::today())->get()->toArray();
         if(!empty($todayCategories)){
@@ -45,40 +38,49 @@ class UserController extends Controller
                 [
                     'data'=>
                         [
-                            'errors' => [['message'=>'You have already selected category today']]
+                            'errors' => [['message'=>'You are have already selected category today']]
                         ]
                     ,
                     'status_code' => 401
                 ], 401);
         }
-
+        $userlastdaycategories = \App\UserCategory::where('user_id',\Auth::id())->whereDate('created_at', $yesterday)->get()->toArray();
         $data = [];
-        foreach ($categories as $category){
+        foreach ($categories as $category) {
             $data[$category['category_id']] =
                 [
-                    'long' =>$category['long'],
+                    'long' => $category['long'],
                     'lat' => $category['lat'],
+                    'color' => $category['color'],
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
-            ];
+                ];
         }
         $user->categories()->attach($data);
+        if (empty($userlastdaycategories)) {
+            $user->count = 1;
+        } else {
+            if ($user->count == 10) {
+                $user->count = 1;
+                \App\UserCategory::where('user_id',\Auth::id())->whereDate('created_at', $yesterday)->get()->toArray();
+            } else {
+                $user->count = $user->count + 1;
+            }
+        }
+        $user->save();
         return response()->json(
             [
-                'data'=>
+                'data' =>
                     [
                         'message' => 'Categories update successfully'
                     ]
                 ,
                 'status_code' => 200
             ], 200);
-
     }
-
     public function get_user_categories(Request $request, $id)
     {
         $catgories = \App\UserCategory::where('category_id',$id)->with('user')->get()->toArray();
-
         if(empty($catgories)) {
             return response()->json(
                 [
@@ -95,9 +97,7 @@ class UserController extends Controller
                 ,
                 'status_code' => 200
             ], 200);
-
     }
-
     public function profile_update(Request $request)
     {
         //JWTAuth::setToken('too.bar.baz')->invalidate();
@@ -115,16 +115,14 @@ class UserController extends Controller
             [
                 'data' => [
                     'message' => 'Profile Update Sucessfull',
-		    'user' => \Auth::user()
+                    'user' => \Auth::user()
                 ]
                 ,
                 'status_code' => 200
             ], 200);
-
     }
     public function profile(Request $request)
     {
-
         return response()->json(
             [
                 'data' => [
@@ -133,7 +131,5 @@ class UserController extends Controller
                 ,
                 'status_code' => 200
             ], 200);
-
     }
-    
 }
