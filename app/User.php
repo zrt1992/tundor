@@ -67,6 +67,6 @@ class User extends \TCG\Voyager\Models\User implements JWTSubject
 
     public function categories()
     {
-        return $this->belongsToMany('App\Category', 'user_categories','user_id','category_id')->withPivot('created_at');
+        return $this->belongsToMany('App\Category', 'user_categories','user_id','category_id')->withPivot('created_at','lat','long');
     }
 }

@@ -1,10 +1,6 @@
 <?php
-<<<<<<< HEAD
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
-=======
-
->>>>>>> e72058590f80e413a7624d2ac5ae510483a0e0cc
 /**
  * Laravel - A PHP Framework For Web Artisans
  *
@@ -12,12 +8,6 @@ use Illuminate\Http\Request;
  * @author   Taylor Otwell <taylor@laravel.com>
  */
 
-<<<<<<< HEAD
-=======
-use Illuminate\Contracts\Http\Kernel;
-use Illuminate\Http\Request;
-
->>>>>>> e72058590f80e413a7624d2ac5ae510483a0e0cc
 define('LARAVEL_START', microtime(true));
 
 /*
@@ -32,11 +22,7 @@ define('LARAVEL_START', microtime(true));
 |
 */
 
-<<<<<<< HEAD
-require __DIR__. '/vendor/autoload.php';
-=======
 require __DIR__ . '/vendor/autoload.php';
->>>>>>> e72058590f80e413a7624d2ac5ae510483a0e0cc
 
 /*
 |--------------------------------------------------------------------------
@@ -50,12 +36,8 @@ require __DIR__ . '/vendor/autoload.php';
 |
 */
 
-<<<<<<< HEAD
-$app = require_once __DIR__. '/bootstrap/app.php';
-=======
 $app = require_once __DIR__ . '/bootstrap/app.php';
 
->>>>>>> e72058590f80e413a7624d2ac5ae510483a0e0cc
 
 /*
 |--------------------------------------------------------------------------

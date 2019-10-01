@@ -4,6 +4,7 @@ use App\Models\Todo;
 use App\Order;
 use App\Task;
 use App\User;
+use App\UserCategory;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Requests\TaskRequest;
@@ -18,8 +19,10 @@ class UserController extends Controller
     }
     public function add_user_categories(Request $request)
     {
+
         $yesterday = date("Y-m-d", strtotime( '-1 days' ) );
         $user = \Auth::user();
+       // dd($user->categories()->get()->toArray());
         $categories = $request->all();
         if(!isset($request->all()[0]['category_id'])){
             return response()->json(
@@ -62,8 +65,33 @@ class UserController extends Controller
         } else {
             if ($user->count == 10) {
                 $user->count = 1;
-                \App\UserCategory::where('user_id',\Auth::id())->whereDate('created_at', $yesterday)->get()->toArray();
+                $userWithCountTen = User::with('categories')->where('count', 10)->whereNotIN('id', [\Auth::id()])->get()->toArray();
+                $userIdWithcountTen = [];
+                foreach ($userWithCountTen as $users) {
+                    $userIdWithcountTen [] = $users['id'];
+                }
+                $current_user = User::with('categories')->where('id', \Auth::id())->first()->toArray();
+                //$user = $user->categories()->get()->toArray();
+                $relatedUsers = UserCategory::whereIn('user_id',$userIdWithcountTen)->get()->toArray();
+                $currentUserCategories = [];
+                if(isset($current_user['categories'])){
+                    $currentUserCategories = $current_user['categories'];
+                }
+                $relatedUsers = $this->calculateRelatedCategories($currentUserCategories, $relatedUsers);
+                $relatedUsers = User::whereIN('id',$relatedUsers)->get()->toArray();
+                $user->save();
+                return response()->json(
+                    [
+                        'data'=>
+                            [
+                                'related_users' => $relatedUsers
+                            ]
+                        ,
+                        'status_code' => 200
+                    ], 200);
+
             } else {
+               // dd('hi');
                 $user->count = $user->count + 1;
             }
         }
@@ -78,6 +106,60 @@ class UserController extends Controller
                 'status_code' => 200
             ], 200);
     }
+    function distance($lat1, $lon1, $lat2, $lon2, $unit) {
+        if (($lat1 == $lat2) && ($lon1 == $lon2)) {
+            return 0;
+        }
+        else {
+            $theta = $lon1 - $lon2;
+            $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+            $dist = acos($dist);
+            $dist = rad2deg($dist);
+            $miles = $dist * 60 * 1.1515;
+            $unit = strtoupper($unit);
+
+            if ($unit == "K") {
+                return ($miles * 1.609344);
+            } else if ($unit == "N") {
+                return ($miles * 0.8684);
+            } else {
+                return $miles;
+            }
+        }
+    }
+
+
+    public function calculateRelatedCategories($curentUserCategories, $relatedUsersCategory)
+    {
+
+
+        $related_users = [];
+        $nearestUserIds = [];
+        foreach ($curentUserCategories as $category) {
+            $min = 9099999999999;
+            $tempuserid = 0;
+            foreach ($relatedUsersCategory as $relatedCategory) {
+
+                if($category['id']==$relatedCategory['category_id']){
+                    if(in_array($relatedCategory['user_id'],$related_users)) continue;
+                    $distance = $this->distance($relatedCategory['lat'],$relatedCategory['long'],$category['pivot']['lat'],$category['pivot']['long'],'k');
+                    if($distance<$min) {
+                        $min = $distance;
+                        $tempuserid = $relatedCategory['user_id'];
+                    }
+
+                }
+
+            }
+            $nearestUserIds[] = $tempuserid;
+
+
+
+        }
+        return $nearestUserIds;
+
+    }
+
     public function get_user_categories(Request $request, $id)
     {
         $catgories = \App\UserCategory::where('category_id',$id)->with('user')->get()->toArray();
