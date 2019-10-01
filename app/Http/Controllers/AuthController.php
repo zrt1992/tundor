@@ -1,9 +1,13 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\Http\Requests\RegisterRequest;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
+
 class AuthController extends Controller
 {
     /**
@@ -15,6 +19,7 @@ class AuthController extends Controller
     {
         $this->middleware('jwt.auth', ['except' => ['login', 'register']]);
     }
+
     /**
      * Get a JWT token via given credentials.
      *
@@ -25,9 +30,11 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
+
         if ($token = $this->guard()->attempt($credentials)) {
             return $this->respondWithToken($token);
         }
+
         return response()->json(
             [
                 'data' =>
@@ -38,6 +45,7 @@ class AuthController extends Controller
                 'status_code' => 401
             ], 401);
     }
+
     /**
      * Get the authenticated User
      *
@@ -47,6 +55,7 @@ class AuthController extends Controller
     {
         return response()->json($this->guard()->user());
     }
+
     /**
      * Log the user out (Invalidate the token)
      *
@@ -55,8 +64,10 @@ class AuthController extends Controller
     public function logout()
     {
         $this->guard()->logout();
+
         return response()->json(['message' => 'Successfully logged out']);
     }
+
     /**
      * Refresh a token.
      *
@@ -66,6 +77,7 @@ class AuthController extends Controller
     {
         return $this->respondWithToken($this->guard()->refresh());
     }
+
     /**
      * Get the token array structure.
      *
@@ -81,6 +93,7 @@ class AuthController extends Controller
             'expires_in' => $this->guard()->factory()->getTTL() * 60
         ]);
     }
+
     /**
      * Get the guard to be used during authentication.
      *
@@ -90,6 +103,7 @@ class AuthController extends Controller
     {
         return Auth::guard('api');
     }
+
     public function register(RegisterRequest $request)
     {
         $user = User::where('email', $request->email)->get()->toArray();
@@ -102,6 +116,7 @@ class AuthController extends Controller
                     'password' => bcrypt($request->password),
                     'profile_pic' => $request->profile_pic
                 ]);
+
             } else {
                 return $this->login($request);
             }
@@ -120,10 +135,14 @@ class AuthController extends Controller
                 'password' => bcrypt($request->password),
             ]);
         }
+
+
         $credentials = $request->only('email', 'password');
         if ($token = $this->guard()->attempt($credentials)) {
             return $this->respondWithToken($token);
         }
+
         return $this->respondWithToken($token);
     }
+
 }

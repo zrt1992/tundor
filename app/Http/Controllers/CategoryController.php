@@ -1,14 +1,18 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\Category;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+
 class CategoryController extends Controller
 {
     public function __construct()
     {
-      //  $this->middleware('jwt.auth');
+        $this->middleware('jwt.auth');
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,7 +20,8 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $todayCategories = \App\UserCategory::where('user_id', \Auth::id())->whereDate('created_at', Carbon::today())->get()->toArray();
+      //  $todayCategories = \App\UserCategory::where('user_id', \Auth::id())->whereDate('created_at', Carbon::today())->get()->toArray();
+        $todayCategories = \App\UserCategory::where('user_id', \Auth::id())->where('created_at','>', Carbon::now()->subMinutes(5))->get()->toArray();
         if (empty($todayCategories)) {
             $categories = Category::whereDate('created_at', Carbon::today())->get()->toArray();
             $data = [];
@@ -30,12 +35,15 @@ class CategoryController extends Controller
                         [
                             'errors' => [['message' => 'You are have already selected category today']],
                             'categories' => $todayCategories
+
                         ]
                     ,
                     'status_code' => 401
                 ], 401);
         }
+
     }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -45,6 +53,7 @@ class CategoryController extends Controller
     {
         //
     }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -53,14 +62,18 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
+
         $category = new Category();
         $category->fill($request->all());
         $category->save();
         $data = [];
         $data['status_code'] = 200;
         $data['data']['message'] = 'category saved sucessfully';
+
         return response()->json($data, 200);
+
     }
+
     /**
      * Display the specified resource.
      *
@@ -71,6 +84,7 @@ class CategoryController extends Controller
     {
         //
     }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -81,6 +95,7 @@ class CategoryController extends Controller
     {
         //
     }
+
     /**
      * Update the specified resource in storage.
      *
@@ -92,6 +107,7 @@ class CategoryController extends Controller
     {
         //
     }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -102,6 +118,7 @@ class CategoryController extends Controller
     {
         //
     }
+
     public function test()
     {
         dd('asd');

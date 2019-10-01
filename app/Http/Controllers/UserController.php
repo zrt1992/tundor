@@ -35,7 +35,11 @@ class UserController extends Controller
                     'status_code' => 401
                 ], 401);
         }
-        $todayCategories = \App\UserCategory::where('user_id',\Auth::id())->whereDate('created_at', Carbon::today())->get()->toArray();
+       // $todayCategories = \App\UserCategory::where('user_id',\Auth::id())->whereDate('created_at', Carbon::today())->get()->toArray();
+        $todayCategories = \App\UserCategory::where('user_id',\Auth::id())->where('created_at','>', Carbon::now()->subMinutes(5)->toDateTimeString())
+
+            ->get()->toArray();
+        //dd($todayCategories);
         if(!empty($todayCategories)){
             return response()->json(
                 [
@@ -47,7 +51,12 @@ class UserController extends Controller
                     'status_code' => 401
                 ], 401);
         }
-        $userlastdaycategories = \App\UserCategory::where('user_id',\Auth::id())->whereDate('created_at', $yesterday)->get()->toArray();
+       // $userlastdaycategories = \App\UserCategory::where('user_id',\Auth::id())->whereDate('created_at', $yesterday)->get()->toArray();
+        $userlastdaycategories = \App\UserCategory::where('user_id',\Auth::id())
+            ->where('created_at','>', Carbon::now()->subMinutes(10)->toDateTimeString())
+            ->where('created_at','<', Carbon::now()->subMinutes(5)->toDateTimeString())
+            ->get()->toArray();
+      //  dd($userlastdaycategories);
         $data = [];
         foreach ($categories as $category) {
             $data[$category['category_id']] =
@@ -63,7 +72,7 @@ class UserController extends Controller
         if (empty($userlastdaycategories)) {
             $user->count = 1;
         } else {
-            if ($user->count == 10) {
+            if ($user->count == 3) {
                 $user->count = 1;
                 $userWithCountTen = User::with('categories')->where('count', 10)->whereNotIN('id', [\Auth::id()])->get()->toArray();
                 $userIdWithcountTen = [];
@@ -84,7 +93,8 @@ class UserController extends Controller
                     [
                         'data'=>
                             [
-                                'related_users' => $relatedUsers
+                                'related_users' => $relatedUsers,
+                                'count' => $user->count
                             ]
                         ,
                         'status_code' => 200
@@ -100,7 +110,8 @@ class UserController extends Controller
             [
                 'data' =>
                     [
-                        'message' => 'Categories update successfully'
+                        'message' => 'Categories update successfully',
+                        'count' => $user->count
                     ]
                 ,
                 'status_code' => 200
