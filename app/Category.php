@@ -11,6 +11,7 @@ class Category extends Model
 
     public function users()
     {
+        
         return $this->belongsToMany('App\Category', 'user_categories','category_id','user_id')->withPivot('created_at');
     }
 }
