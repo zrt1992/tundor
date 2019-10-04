@@ -23,6 +23,7 @@ Route::post('/user/category/add','UserController@add_user_categories');
 Route::get('/user/category/get/{id}','UserController@get_user_categories');
 Route::post('/user/profile/update','UserController@profile_update');
 Route::get('/user/profile','UserController@profile');
+Route::get('/user/relatedusers','UserController@related_users');
 
 Route::resource('categories', 'CategoryController');
 

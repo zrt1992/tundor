@@ -12,8 +12,9 @@
 */
 
 Route::get('/', function () {
-      phpinfo();
-die;
+   // dd(asset('home'));
+//      phpinfo();
+//die;
     return view('welcome');
 });
 
